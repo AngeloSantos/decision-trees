@@ -1,0 +1,226 @@
+---
+title: "Predicting Hits with Decision Trees"
+author: "Angelo Santos"
+date: "August 23, 2019"
+output:
+  ioslides_presentation: default
+---
+
+# Index
+
+- Working with Gradient Boosting Machine (GMB)
+- Looking closer in the data set 
+- Cleaning up the data set
+- Results after clean up 
+- Next steps
+
+# Working with GMB
+
+## What does GBM do?
+
+- Each tree is grown using information from previous one
+- After evaluating the first tree
+    - increase weights of observations that are hard to classify
+    - and lower the weights for those that are easy to classify
+- In other words, given the current model
+    - fit a tree using the current residuals
+    - rather than the outcome
+- This method slowly converts weak learners into strong ones
+
+<p align="center">
+  <img src="figures/Gradient_Boosting_Machines.png" width="500" />
+</p>
+
+
+## Let's try to predict the 5th tracking hit
+
+- Sample of 10K tracks
+- Training phase
+    - Inputs for GBM:
+        - x\_1, x\_2, x\_3, x\_4, y\_1, y\_2, y\_3, y\_4, z\_1, z\_2, z\_3, z\_4
+        - 7K tracks
+        - Number of trees = 200
+        - Trees shrinkage = 0.1 (10%)
+        - Trees interaction depth = 10
+        - GBM distribution = gaussian
+- Testing phase
+    - 3K tracks
+    - 39 trees between 10 and 200 (in steps of 5)
+
+## Relative influence from each input coordinate
+
+<p align="center">
+  <img src="figures/relative_influence_x5_10K.png" width="500" />
+</p>
+
+## Best number of trees for prediction (I)
+
+- Trying to predict 5th tracking hit
+- Compute Minimum Mean Squared Error for each number of tree $n_{tree}$
+    - Considering
+        - 39 trees between 10 and 200 (in steps of 5)
+        - N = 3K tracks
+
+$$MSE_{n_{tree}} = \frac{\sum_{i=1}^{N} (x^{Test}_{i} - x^{Predicted}_{i})^2}{N}$$
+
+
+## Best number of trees for prediction (II)
+
+- Minimum MSE = 3576 $mm^2$ for 45 trees
+
+<p align="center">
+  <img src="figures/mse_vs_ntrees_x5_10k.png" width="450" />
+</p>
+
+
+## Checking predicted results for 5th hit
+
+- We observe a considerable fluctuation
+- A dream case would be a straight diagonal line
+
+<p align="center">
+  <img src="figures/test_vs_pred_x5_10k.png" width="450" />
+</p>
+
+
+# Looking closer in the data
+
+
+## Plotting all hits in X-Y plane (I)
+
+- Hits from 10K tracks with |z| < 300 mm
+- We observe an overlay of the plates
+
+<p align="center">
+  <img src="figures/xy_10000n_z_lt_300.png" width="450" />
+</p>
+
+## Plotting all hits in X-Y plane (II)
+
+- Adding a track
+- Some layers have more than 1 hit
+
+<p align="center">
+  <img src="figures/xy_10K_z_lt_300_LowRange.png" width="450" />
+</p>
+
+## Plotting all hits in X-Y plane (III)
+
+- If we try to predict the 5th hit using previous 4
+    - It could bring difficult to GBM
+
+<p align="center">
+  <img src="figures/xy_10K_z_lt_300_VeryLowRange.png" width="450" />
+</p>
+
+## Plotting all hits in X-Y plane (IV)
+
+- It seems we may have up to 4 hits in the same layer
+
+<p align="center">
+  <img src="figures/xy_10K_z_lt_300_1_quadrant.png" width="450" />
+</p>
+
+## Plotting all hits in Z-Y plane
+
+- And the same happens in Z-Y (or Z-X) plane
+- So let's try to remove duplicated events
+
+<p align="center">
+  <img src="figures/zy_10K_x_lt_20_adding_tracks_LowRange.png" width="450" />
+</p>
+
+# Let's clean up the data set
+
+## Method to clean up the data set (I)
+
+- Compute 3D distance between each 2 subsequent hits
+    - in the same track
+
+<p align="center">
+  <img src="figures/3D_distance_between_tracking_hits_10K.png" width="500" />
+</p>
+
+## Method to clean up the data set (II)
+
+- Looking closer
+    - A pick for 3D distance < 20 mm seems to be due duplicated hits in the same layer
+
+<p align="center">
+  <img src="figures/3D_distance_between_tracking_hits_10K_LowRange.png" width="500" />
+</p>
+
+## Method to clean up the data set (III)
+
+- Looking even closer
+    - Shoud we consider a tighter cut?
+
+<p align="center">
+  <img src="figures/3D_distance_between_tracking_hits_10K_VeryLowRange.png" width="500" />
+</p>
+
+
+## A cut of 20 mm is reasonable?
+
+- Looking the central region of the detector
+    - Distance between plates seems to be higher than 20 mm
+    - So a cut in 20 mm looks fine
+
+<p align="center">
+  <img src="figures/xy_10K_z_lt_300_VeryLowRange.png" width="350" />
+  <img src="figures/zy_2000n_x_lt_20.png" width="350" />
+</p>
+
+
+## Comparing tracks after clean up (X-Y)
+
+<p align="center">
+  <img src="figures/xy_comparing_cleaned_NOT_cleaned_data.png" width="500" />
+</p>
+
+## Comparing tracks after clean up (Z-Y)
+
+<p align="center">
+  <img src="figures/zy_comparing_cleaned_NOT_cleaned_data.png" width="500" />
+</p>
+
+## Predicted results after clean up (I)
+
+- What about the horizontal points in a straight line?
+- Does it seem reasonable? Actually it is pure Physics!!!
+
+<p align="center">
+  <img src="figures/test_vs_pred_x5_10k_afterCleanUP.png" width="450" />
+</p>
+
+## Predicted results after clean up (II)
+
+- It seems GBM has learned Physics
+    - finding a 5th hit even when there is no hit
+
+<p align="center">
+  <img src="figures/test_vs_pred_x5_10k_afterCleanUP.png" width="450" />
+</p>
+
+## Predicted results after clean up (III)
+
+- Now for Y and Z predictions
+- Results are not satisfied for Z, needing more studies
+
+<p align="center">
+  <img src="figures/test_vs_pred_y5_10k_afterCleanUP.png" width="350" />
+  <img src="figures/test_vs_pred_z5_10k_afterCleanUP.png" width="350" />
+</p>
+
+# Next Steps
+
+## To-Do-List
+
+- Tune GBM parameters
+- Try to predict all the other hits in the track
+- Find nearest neighbor point of a predicted point
+
+
+
+
+
