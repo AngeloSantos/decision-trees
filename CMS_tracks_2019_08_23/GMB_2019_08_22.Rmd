@@ -221,6 +221,45 @@ $$MSE_{n_{tree}} = \frac{\sum_{i=1}^{N} (x^{Test}_{i} - x^{Predicted}_{i})^2}{N}
 - Find nearest neighbor point of a predicted point
 
 
+# Moving ahead
+
+## Tune GBM parameters
+
+- Training sample (7K tracks) to find 5th hit (from previous 4)
+    - Shrinkage = 9, Interaction deepth = 10
+
+<p align="center">
+  <img src="figures/mapNtreeShrinkage_x5_10k.png" width="500" />
+</p>
+
+## Clustering heat map cells
+
+- Unfortunately, Minimum MSE = 4454 mm$^2$
+    - which corresponds to 6.6 cm (error too big!!!)
+
+<p align="center">
+  <img src="figures/mapNtreeShrinkage_x5_10k_clustered.png" width="500" />
+</p>
+
+## New idea: cutting out parameters (I)
+
+- Let's try to predict a 4th point from previous 3 ones
+- Minimum MSE = 2122 mm$^2$ (4.6 cm)
+
+<p align="center">
+  <img src="figures/mapNtreeShrinkage_x4_10k_clustered.png" width="430" />
+</p>
+
+## New idea: cutting out parameters (II)
+
+<p align="center">
+  <img src="figures/test_vs_pred_x4_3k_afterCleanUP.png" width="600" />
+</p>
 
 
+# Next steps (finally)
+
+- Counting out more parameters
+- Try to predict all the other hits in the track
+- Find nearest neighbor point of a predicted point
 
