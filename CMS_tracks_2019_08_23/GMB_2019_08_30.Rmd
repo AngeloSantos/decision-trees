@@ -1,0 +1,39 @@
+---
+title: "Predicting Hits with Decision Trees"
+author: "Angelo Santos"
+date: "August 30, 2019"
+output:
+  ioslides_presentation: default
+---
+
+## Separating Regions
+
+<p align="center">
+  <img src="figures/test_vs_pred_x4_3k_separateRegions.png" width="550" />
+</p>
+
+
+## Cases when GBM is OK
+
+<p align="center">
+  <img src="figures/check_x4_xy_testIn_predIn.png" width="550" />
+</p>
+
+## Predicting non-existed higs
+
+<p align="center">
+  <img src="figures/check_x4_xy_testZero_predNonZero.png" width="550" />
+</p>
+
+## Real hit values higher than predicted
+
+<p align="center">
+  <img src="figures/check_x4_xy_testHigh_predHigh.png" width="550" />
+</p>
+
+## Predicted hits higher than Real ones
+
+<p align="center">
+  <img src="figures/check_x4_zx_testLow_predLow.png" width="550" />
+</p>
+
